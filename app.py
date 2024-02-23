@@ -7,6 +7,7 @@ import pandas as pd
 import plotly.graph_objs as go
 
 app = Dash(__name__, suppress_callback_exceptions=True)
+server = app.server
 
 app.css.append_css({'external_url': '/static/reset.css'})
 
