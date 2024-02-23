@@ -35,7 +35,6 @@ sub_header = html.H2(
 
 sub_header_container = html.Div(sub_header, style={'backgroundColor': '#f4d5a9', 'height': '25px', 'width': '100%', 'margin': '0'})
 
-
 #Charts:
 return_chart          = dcc.Graph(id='return_chart',          style={'width': '100%', 'height': '400px'})
 yield_vs_return_chart = dcc.Graph(id='yield_vs_return_chart', style={'width': '100%', 'height': '400px'})
@@ -195,7 +194,27 @@ def update_charts(selected_country, return_type, forward_return_period, color_le
             x=filtered_data['Yield (y)'] / 100,
             y=filtered_data[forward_column],
             mode='markers',
-            marker=dict(color='black')
+            marker=dict(color='black'),
+            showlegend=False
+        ))
+
+         # Add dummy traces for custom legend
+        fig_scatter.add_trace(go.Scatter(
+            x=[None],
+            y=[None],
+            mode='markers',
+            marker=dict(color='#d78f49'),
+            name=f'Most Recent {color_level}% of data points'
+        ))
+
+        hist_data = 100-color_level
+
+        fig_scatter.add_trace(go.Scatter(
+            x=[None],
+            y=[None],
+            mode='markers',
+            marker=dict(color='black'),
+            name=f'Earliest {hist_data}% of data points'
         ))
 
         fig_scatter.update_layout(
@@ -208,7 +227,8 @@ def update_charts(selected_country, return_type, forward_return_period, color_le
             margin=dict(l=1, r=5, t=50, b=50),
             plot_bgcolor='white',
             paper_bgcolor='white',
-            autosize=True
+            autosize=True,
+            legend=dict(orientation='h', y=1.1)
         )
 
         data_length = len(filtered_data)
@@ -218,7 +238,8 @@ def update_charts(selected_country, return_type, forward_return_period, color_le
                 x=recent_data['Yield (y)'] / 100,
                 y=recent_data[forward_column],
                 mode='markers',
-                marker=dict(color='#d78f49')
+                marker=dict(color='#d78f49'),
+                showlegend=False
             ))
 
         fig_scatter.update_xaxes(tickformat=".0%")
