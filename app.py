@@ -11,7 +11,7 @@ server = app.server
 
 app.css.append_css({'external_url': '/static/reset.css'})
 
-df = pd.read_csv('dash_resource.csv')
+df = pd.read_csv('df_returns.csv')
 
 #Layouts and fonts:
 font_style = {'font-family': 'Gabarito, sans-serif'}
@@ -157,10 +157,10 @@ def update_charts(selected_country, return_type, forward_return_period, color_le
     if forward_return_period is not None:
         for period in ['1Y', '5Y', '20Y']:
             if return_type == 'Nominal':
-                r_return = f'{period} N_Return'
+                r_return = f'{period} Nominal Return'
                 line_color = 'grey' if period == '1Y' else 'black' if period == '5Y' else '#d78f49'
             else:
-                r_return = f'{period} R_Return'
+                r_return = f'{period} Real Return'
                 line_color = 'grey' if period == '1Y' else 'black' if period == '5Y' else '#d78f49'
 
             fig_returns.add_trace(go.Scatter(x=filtered_data['TIME'], y=filtered_data[r_return],
@@ -186,12 +186,15 @@ def update_charts(selected_country, return_type, forward_return_period, color_le
         fig_returns = go.Figure()
 
     if forward_return_period is not None:
-        forward_column = f'Forward {forward_return_period} {return_type[0]}_Return'
+        if return_type == 'Nominal':
+             forward_column = f'Forward {forward_return_period} Nominal Return'
+        else:
+            forward_column = f'Forward {forward_return_period} Real Return'
 
         fig_scatter = go.Figure()
 
         fig_scatter.add_trace(go.Scatter(
-            x=filtered_data['Yield (y)'] / 100,
+            x=filtered_data['LT_RATE'] / 100,
             y=filtered_data[forward_column],
             mode='markers',
             marker=dict(color='black'),
@@ -235,7 +238,7 @@ def update_charts(selected_country, return_type, forward_return_period, color_le
         if data_length > 0 and color_level > 0:
             recent_data = filtered_data.tail(int(data_length * (color_level / 100)))
             fig_scatter.add_trace(go.Scatter(
-                x=recent_data['Yield (y)'] / 100,
+                x=recent_data['LT_RATE'] / 100,
                 y=recent_data[forward_column],
                 mode='markers',
                 marker=dict(color='#d78f49'),
@@ -295,7 +298,7 @@ def update_charts(selected_country, return_type, forward_return_period, color_le
         country_data = yield_chart_data[yield_chart_data['Country'] == country]
         fig_yield.add_trace(go.Scatter(
             x=country_data['TIME'],
-            y=country_data['Yield (y)']/100,
+            y=country_data['LT_RATE']/100,
             mode='lines',
             name=f'{country}',
             line=dict(color=colors[country])  # Assign the appropriate color
