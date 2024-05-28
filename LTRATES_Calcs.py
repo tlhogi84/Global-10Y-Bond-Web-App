@@ -88,19 +88,45 @@ df_RATES = df_RATES.sort_values(by=['LOCATION', 'TIME'])
 def calculate_duration(y):
     if y == 0:
         y = 0.0000000001  # Set a small value if yield is 0
-    return (1 - (1 + y/100) ** -10) / (1 - (1 + y/100) ** -1)
+    macaulay_duration = (1 - (1 + y/100) ** -10) / (1 - (1 + y/100) ** -1)
+    modified_duration = macaulay_duration / (1 + y/100)
+    return modified_duration
+
+def calculate_convexity(y):
+    if y == 0:
+        y = 1e-10  # Set a small value if yield is 0
+
+    y = y/100
+    
+    face_value = 1                    # Assuming the face value of the bond is 1
+    coupon_payment = y * face_value   # Annual coupon payment
+    periods = 10                      # Number of periods (10 years)
+    
+    # Generate the cash flow series: coupons for each period and face value repayment at maturity
+    cf = [coupon_payment] * (periods - 1) + [coupon_payment + face_value]
+    
+    # Current price of the bond (since it's a par bond, price is face value)
+    p = face_value
+    
+    convexity = 0
+    for t, cash_flow in enumerate(cf, 1):
+        convexity += (cash_flow / (1 + y)**t) * t * (t + 1)
+    
+    convexity /= (p * (1 + y)**2)
+    return convexity
 
 def calculate_coupon_return(data):
     data['Coupon Return'] = data['LT_RATE'].shift(1) / 1200
     return data
     
 def calculate_price_return(data):
-    data['Price Return'] = -data['Duration'] * data['LT_RATE'].diff() / 100
+    data['Price Return'] = -data['Duration'] * data['LT_RATE'].diff() / 100 + 0.5 * data['Convexity'] * (data['LT_RATE'].diff() / 100)**2
     return data
 
 df_RATES = df_RATES.sort_values(by=['LOCATION', 'TIME'])
 
 df_RATES['Duration'] = df_RATES['LT_RATE'].apply(calculate_duration)
+df_RATES['Convexity'] = df_RATES['LT_RATE'].apply(calculate_convexity)
 
 df_RATES = df_RATES.groupby('LOCATION', group_keys=False).apply(calculate_price_return).reset_index(drop=True)
 
@@ -111,7 +137,7 @@ df_RATES['Total Return'] = df_RATES['Price Return'] + df_RATES['Coupon Return']
 df_RATES['Total Return Index'] = df_RATES.groupby('LOCATION')['Total Return'].transform(
     lambda x: (1 + x).cumprod().fillna(1))
 
-df_returns = df_RATES[['LOCATION', 'Country', 'TIME', 'LT_RATE']].copy()
+df_returns = df_RATES[['LOCATION', 'Country', 'TIME', 'LT_RATE', 'Duration', 'Convexity']].copy()
 df_returns['1Y Nominal Return']   = (df_RATES['Total Return Index'] / df_RATES.groupby('LOCATION')['Total Return Index'].shift(12)) - 1
 df_returns['5Y Nominal Return']   = ((df_RATES['Total Return Index'] / df_RATES.groupby('LOCATION')['Total Return Index'].shift(60)) ** (1 / 5)) - 1
 df_returns['20Y Nominal Return']  = ((df_RATES['Total Return Index'] / df_RATES.groupby('LOCATION')['Total Return Index'].shift(240)) ** (1 / 20)) - 1

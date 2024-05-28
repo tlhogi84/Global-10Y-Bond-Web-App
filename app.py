@@ -1,4 +1,3 @@
-# cd C:\Users\Tlhogi\Documents\Grace\Investment Work\4. Sovereign Bonds\Global
 # python app.py
 # http://127.0.0.1:8050/
 
@@ -9,16 +8,14 @@ import plotly.graph_objs as go
 app = Dash(__name__, suppress_callback_exceptions=True)
 server = app.server
 
-app.css.append_css({'external_url': '/static/reset.css'})
-
 df = pd.read_csv('df_returns.csv')
 
-#Layouts and fonts:
+# Layouts and fonts:
 font_style = {'font-family': 'Gabarito, sans-serif'}
 lower_background_color = "black"
 lower_style = {'backgroundColor': lower_background_color, 'border': 'none'}
 
-#Page Headers
+# Page Headers
 header_container = html.Div([
     html.Div([
         html.Img(src='/assets/Quandoyen_Banner.png', style={'width': '1000px', 'height': '100px', 'float': 'left'}),
@@ -35,13 +32,13 @@ sub_header = html.H2(
 
 sub_header_container = html.Div(sub_header, style={'backgroundColor': '#f4d5a9', 'height': '25px', 'width': '100%', 'margin': '0'})
 
-#Charts:
-return_chart          = dcc.Graph(id='return_chart',          style={'width': '100%', 'height': '400px'})
+# Charts:
+return_chart = dcc.Graph(id='return_chart', style={'width': '100%', 'height': '400px'})
 yield_vs_return_chart = dcc.Graph(id='yield_vs_return_chart', style={'width': '100%', 'height': '400px'})
-inflation_chart       = dcc.Graph(id='inflation_chart',       style={'width': '100%', 'height': '400px'})
-yield_chart           = dcc.Graph(id='yield_chart',           style={'width': '100%', 'height': '400px'})
+inflation_chart = dcc.Graph(id='inflation_chart', style={'width': '100%', 'height': '400px'})
+yield_chart = dcc.Graph(id='yield_chart', style={'width': '100%', 'height': '400px'})
 
-#Selection Tools
+# Selection Tools
 
 country_dropdown = dcc.Dropdown(
     id='country-dropdown',
@@ -99,7 +96,7 @@ yield_dropdown = dcc.Dropdown(
     style={'width': '300px', **font_style}
 )
 
-#Graph Containers
+# Graph Containers
 container_1 = html.Div([
     country_dropdown,
     return_type_radio,
@@ -181,7 +178,7 @@ def update_charts(selected_country, return_type, forward_return_period, color_le
             autosize=True
         )
 
-        fig_returns.update_yaxes(tickformat=".0%")
+        fig_returns.update_yaxes(tickformat=".1%")
     else:
         fig_returns = go.Figure()
 
@@ -201,7 +198,7 @@ def update_charts(selected_country, return_type, forward_return_period, color_le
             showlegend=False
         ))
 
-         # Add dummy traces for custom legend
+        # Add dummy traces for custom legend
         fig_scatter.add_trace(go.Scatter(
             x=[None],
             y=[None],
@@ -210,7 +207,7 @@ def update_charts(selected_country, return_type, forward_return_period, color_le
             name=f'Most Recent {color_level}% of data points'
         ))
 
-        hist_data = 100-color_level
+        hist_data = 100 - color_level
 
         fig_scatter.add_trace(go.Scatter(
             x=[None],
@@ -245,8 +242,8 @@ def update_charts(selected_country, return_type, forward_return_period, color_le
                 showlegend=False
             ))
 
-        fig_scatter.update_xaxes(tickformat=".0%")
-        fig_scatter.update_yaxes(tickformat=".0%")
+        fig_scatter.update_xaxes(tickformat=".1%")
+        fig_scatter.update_yaxes(tickformat=".1%")
     else:
         fig_scatter = go.Figure()
 
@@ -280,7 +277,7 @@ def update_charts(selected_country, return_type, forward_return_period, color_le
         paper_bgcolor='white',
         autosize=True
     )
-    inflation_chart.update_yaxes(tickformat=".0%")
+    inflation_chart.update_yaxes(tickformat=".1%")
 
     # Create a list of countries to plot for the yield graph, including the selected and additional countries
     countries_to_plot = [selected_country]
@@ -298,7 +295,7 @@ def update_charts(selected_country, return_type, forward_return_period, color_le
         country_data = yield_chart_data[yield_chart_data['Country'] == country]
         fig_yield.add_trace(go.Scatter(
             x=country_data['TIME'],
-            y=country_data['LT_RATE']/100,
+            y=country_data['LT_RATE'] / 100,
             mode='lines',
             name=f'{country}',
             line=dict(color=colors[country])  # Assign the appropriate color
@@ -316,10 +313,9 @@ def update_charts(selected_country, return_type, forward_return_period, color_le
         paper_bgcolor='white',
         autosize=True
     )
-    fig_yield.update_yaxes(tickformat=".0%")
+    fig_yield.update_yaxes(tickformat=".1%")
 
     return fig_returns, fig_scatter, inflation_chart, fig_yield
 
 if __name__ == '__main__':
     app.run(debug=True)
-
