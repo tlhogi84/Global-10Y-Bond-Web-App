@@ -4,7 +4,7 @@ import numpy as np
 df_CPI = pd.read_csv('OECD_CPI_Data.csv')
 
 #I only want to retain these columns
-selected_columns = ['LOCATION', 'Country', 'FREQUENCY','TIME','Time', 'Value'] 
+selected_columns = ['LOCATION', 'Country', 'FREQUENCY','TIME', 'Value'] 
 df_CPI = df_CPI.loc[:, selected_columns]
 
 # Rename the "Value" column to "CPI Index"
@@ -36,7 +36,7 @@ def convert_quarterly(row):
 df_CPI['formatted_date'] = df_CPI.apply(convert_quarterly, axis=1)
 
 # Drop both 'TIME' and 'Time' columns
-df_CPI = df_CPI.drop(columns=['TIME', 'Time'])
+df_CPI = df_CPI.drop(columns=['TIME'])
 
 # Rename 'formatted_date' to 'TIME'
 df_CPI = df_CPI.rename(columns={'formatted_date': 'TIME'})

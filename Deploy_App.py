@@ -18,14 +18,13 @@ def run_with_progress(command, description, total_seconds):
 
 start_time_overall = time.time()
 print_with_timestamp("Starting: Collect_API_Data")
-
-run_with_progress(["python", "Collect_API_Data.py"], "Collect_API_Data", 200)
+run_with_progress(["python", "Collect_API_Data.py"], "Collect_API_Data", 50)
 
 print_with_timestamp("Starting: CPI_CALCS")
-run_with_progress(["python", "CPI_CALCS.py"], "CPI_CALCS", 200)
+run_with_progress(["python", "CPI_CALCS.py"], "CPI_CALCS", 20)
 
 print_with_timestamp("Starting: LTRATES_Calcs")
-run_with_progress(["python", "LTRATES_Calcs.py"], "LTRATES_Calcs", 200)
+run_with_progress(["python", "LTRATES_Calcs.py"], "LTRATES_Calcs", 20)
 
 # End time for overall process
 end_time_overall = time.time()
