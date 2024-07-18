@@ -137,7 +137,7 @@ df_RATES['Total Return'] = df_RATES['Price Return'] + df_RATES['Coupon Return']
 df_RATES['Total Return Index'] = df_RATES.groupby('LOCATION')['Total Return'].transform(
     lambda x: (1 + x).cumprod().fillna(1))
 
-df_returns = df_RATES[['LOCATION', 'Country', 'TIME', 'LT_RATE', 'Duration', 'Convexity']].copy()
+df_returns = df_RATES[['LOCATION', 'Country', 'TIME', 'LT_RATE', 'Duration', 'Convexity', 'Total Return Index']].copy()
 df_returns['1Y Nominal Return']   = (df_RATES['Total Return Index'] / df_RATES.groupby('LOCATION')['Total Return Index'].shift(12)) - 1
 df_returns['5Y Nominal Return']   = ((df_RATES['Total Return Index'] / df_RATES.groupby('LOCATION')['Total Return Index'].shift(60)) ** (1 / 5)) - 1
 df_returns['20Y Nominal Return']  = ((df_RATES['Total Return Index'] / df_RATES.groupby('LOCATION')['Total Return Index'].shift(240)) ** (1 / 20)) - 1
