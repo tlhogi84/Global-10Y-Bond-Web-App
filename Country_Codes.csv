@@ -18,7 +18,6 @@ CHN,China
 DEU,Germany
 BEL,Belgium
 IND,India
-G-20,G20
 OECD,OECD - Total
 POL,Poland
 KOR,Korea
@@ -39,7 +38,6 @@ FRA,France
 RUS,Russia
 LUX,Luxembourg
 USA,United States
-G-7,G7
 NZL,New Zealand
 JPN,Japan
 TUR,Turkey
@@ -48,3 +46,9 @@ LTU,Lithuania
 IRL,Ireland
 FIN,Finland
 AUT,Austria
+HRV,Croatia
+BGR,Bulgaria
+EA20,EA20
+EU27_2020,EU27_2020
+G20,G20
+G7,G7
